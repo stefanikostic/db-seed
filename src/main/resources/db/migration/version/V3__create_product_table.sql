@@ -1,5 +1,5 @@
 CREATE TABLE "product" (
-    "name" VARCHAR(50),
+    "name" VARCHAR(200),
     "link" VARCHAR,
     "image" VARCHAR,
     "category_id" INT NOT NULL,
