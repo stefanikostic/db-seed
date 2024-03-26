@@ -14,6 +14,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+/**
+ * Java repeatable migration for inserting categories.
+ */
 @Component
 @RequiredArgsConstructor
 public class R__insert_categories extends BaseJavaMigration {
@@ -31,6 +34,13 @@ public class R__insert_categories extends BaseJavaMigration {
 
     private final CategoriesProperties categoriesProperties;
 
+    /**
+     * Migrates categories by going through all category properties from configuration and performing insert or update
+     * of the category if present.
+     *
+     * @param context The context relevant for this migration, containing things like the JDBC connection to use and the
+     *                current Flyway configuration.
+     */
     @Override
     public void migrate(Context context) throws SQLException {
         Connection connection = context.getConnection();
@@ -73,6 +83,9 @@ public class R__insert_categories extends BaseJavaMigration {
         }
     }
 
+    /**
+     * @return sum of the hash codes of the category properties from configuration file.
+     */
     @Override
     public Integer getChecksum() {
         return categoriesProperties.getCategories().stream().mapToInt(Record::hashCode).sum();

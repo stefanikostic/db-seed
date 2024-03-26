@@ -1,6 +1,12 @@
 package com.shopcompare.dbseed.configuration;
 
-public record CategoryProperty (String name, Integer superCategoryId) {
+/**
+ * Model representing category property from configuration properties.
+ *
+ * @param name name of the category
+ * @param superCategoryId id of its super category
+ */
+public record CategoryProperty(String name, Integer superCategoryId) {
 
     @Override
     public int hashCode() {

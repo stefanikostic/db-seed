@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Configuration properties class listing categories.
+ */
 @Component
 @ConfigurationProperties
 @PropertySource(value = "categories.properties", encoding = "UTF-8")
