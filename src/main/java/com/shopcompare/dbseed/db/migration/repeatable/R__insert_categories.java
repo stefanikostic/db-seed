@@ -12,20 +12,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class R__insert_categories extends BaseJavaMigration {
 
     private static final String ID_COLUMN_LABEL = "id";
-    private static final String SELECT_CATEGORY_QUERY = "SELECT * FROM category WHERE name = ?";
+    private static final String SELECT_CATEGORY_QUERY = "SELECT * FROM category WHERE id = ?";
     private static final String INSERT_CATEGORY_QUERY = "INSERT INTO category (name, " +
             "super_category_id) VALUES (?, ?)";
     private static final String UPDATE_CATEGORY_QUERY = "UPDATE category SET name = ?, " +
             "super_category_id = ? WHERE id = ?";
     private static final int NAME_PARAMETER_INDEX = 1;
     private static final int SUPER_CATEGORY_PARAMETER_INDEX = 2;
-    private static final int ID_PARAMETER_INDEX = 3;
+    private static final int SELECT_QUERY_ID_PARAMETER_INDEX = 1;
+    private static final int UPDATE_QUERY_ID_PARAMETER_INDEX = 3;
 
     private final CategoriesProperties categoriesProperties;
 
@@ -36,15 +38,17 @@ public class R__insert_categories extends BaseJavaMigration {
         PreparedStatement insertStatement = connection.prepareStatement(INSERT_CATEGORY_QUERY);
         PreparedStatement updateStatement = connection.prepareStatement(UPDATE_CATEGORY_QUERY);
 
-        for (CategoryProperty categoryProperty : categoriesProperties.getCategories()) {
-            selectStatement.setString(NAME_PARAMETER_INDEX, categoryProperty.name());
+        List<CategoryProperty> categories = categoriesProperties.getCategories();
+        for (CategoryProperty categoryProperty : categories) {
+            int categoryPropertyIdByConfiguration = categories.indexOf(categoryProperty) + 1;
+            selectStatement.setInt(SELECT_QUERY_ID_PARAMETER_INDEX, categoryPropertyIdByConfiguration);
 
             ResultSet resultSet = selectStatement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt(ID_COLUMN_LABEL);
+                int categoryIdInDB = resultSet.getInt(ID_COLUMN_LABEL);
                 updateStatement.setString(NAME_PARAMETER_INDEX, categoryProperty.name());
                 populateCategoryInStatement(categoryProperty, updateStatement);
-                updateStatement.setInt(ID_PARAMETER_INDEX, id);
+                updateStatement.setInt(UPDATE_QUERY_ID_PARAMETER_INDEX, categoryIdInDB);
                 updateStatement.addBatch();
             } else {
                 insertStatement.setString(NAME_PARAMETER_INDEX, categoryProperty.name());
